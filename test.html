@@ -1,0 +1,125 @@
+<html>
+	<head>
+		<script src="cp437.js"></script>
+		<script src="mapcache.js"></script>
+		<style type="text/css">
+      @font-face
+      {
+        font-family: 'Perfect DOS VGA 437';
+        src: local('Perfect DOS VGA 437'), local('PerfectDOSVGA437'),
+          url('PerfectDOSVGA437.woff2') format('woff2'),
+          url('PerfectDOSVGA437.woff') format('woff');
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+      }
+
+			.DOSFont
+			{
+				background: #DDD;
+				border: 1px solid #004;
+				padding: 2px;
+				font-family: 'Perfect DOS VGA 437';
+        letter-spacing: calc(-1em / 16); /* convert 9x16 to 8x16 */
+			}
+		</style>
+		<script type="text/javascript">
+			window.onload =
+				function()
+				{
+					var txtInput = document.getElementById("txtInput");
+					var cmdTranslate = document.getElementById("cmdTranslate");
+					var lblDefaultFont = document.getElementById("lblDefaultFont");
+					var lblUntranslated = document.getElementById("lblUntranslated");
+					var lblTranslated = document.getElementById("lblTranslated");
+
+					var lblAction = document.getElementById("lblAction");
+					var lblCacheRecent = document.getElementById("lblCacheRecent");
+					var lblCachePreCache = document.getElementById("lblCachePreCache");
+					var lblCacheCached = document.getElementById("lblCacheCached");
+
+					var didConvert;
+
+					var detectConvert =
+						function (str)
+						{
+							didConvert = true;
+							return ConvertUnicodeToCP437(str);
+						};
+
+					var mapCache = new MapCache(detectConvert);
+
+					cmdTranslate.onclick =
+						function()
+						{
+							var text = txtInput.value;
+
+							didConvert = false;
+
+							var translated = mapCache.Map(text);
+
+							lblDefaultFont.innerText = text;
+							lblUntranslated.innerText = text;
+							lblTranslated.innerText = translated;
+
+							if (didConvert)
+							{
+								lblAction.innerText = "String was converted";
+								lblAction.style.color = "brown";
+							}
+							else
+							{
+								lblAction.innerText = "Cached conversion was used";
+								lblAction.style.color = "green";
+							}
+
+							var cacheStats = mapCache.GetCacheStatistics();
+
+							lblCacheRecent.innerText = cacheStats.Recent;
+							lblCachePreCache.innerText = cacheStats.PreCache;
+							lblCacheCached.innerText = cacheStats.Cached;
+						};
+				};
+		</script>
+	</head>
+	<body>
+		Input: <input id="txtInput" type="text" value="├──────────────────────────────── Immediate ─────────────────────────────────┬┤" size="100" /><br />
+		<input id="cmdTranslate" type="button" value="Translate" /><br />
+		<hr />
+		<table style="border: none">
+			<tr>
+				<td>
+					Default font:
+				</td>
+				<td>
+					<span id="lblDefaultFont"></span><br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					In 437 font untranslated:
+				</td>
+				<td>
+					<span id="lblUntranslated" class="DOSFont"></span><br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					In 437 font translated:
+				</td>
+				<td>
+					<span id="lblTranslated" class="DOSFont"></span><br />
+				</td>
+			</tr>
+		</table>
+		<br />
+		<span id="lblAction">Nothing has been translated yet</span><br />
+		<br />
+		<span>Cache statistics:</span><br />
+		<ul>
+			<li>Recent: <span id="lblCacheRecent"></span></li>
+			<li>Candidates for promotion to permanent: <span id="lblCachePreCache"></span></li>
+			<li>Permanently cached: <span id="lblCacheCached"></span></li>
+		</ul>
+	</body>
+</html>
