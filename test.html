@@ -41,6 +41,7 @@
 					var lstSuggestions = document.getElementById("lstSuggestions");
 					var txtInput = document.getElementById("txtInput");
 					var cmdTranslate = document.getElementById("cmdTranslate");
+					var chkUsePUA = document.getElementById("chkUsePUA");
 					var lblDefaultFont = document.getElementById("lblDefaultFont");
 					var lblUntranslated = document.getElementById("lblUntranslated");
 					var lblTranslated = document.getElementById("lblTranslated");
@@ -62,10 +63,18 @@
 						function (str)
 						{
 							didConvert = true;
-							return ConvertUnicodeToCP437(str);
+							return chkUsePUA.checked ? ConvertUnicodeToCP437PrivateUseAreaControlCharactersOnly(str) : ConvertUnicodeToCP437(str);
 						};
 
 					var mapCache = new MapCache(detectConvert);
+
+					var bustCache = false;
+
+					chkUsePUA.onchange =
+						function()
+						{
+							bustCache = true;
+						};
 
 					cmdTranslate.onclick =
 						function()
@@ -74,9 +83,16 @@
 
 							didConvert = false;
 
+							if (bustCache)
+							{
+								mapCache.InvalidateKey(text);
+								bustCache = false;
+							}
+
 							var translated = mapCache.Map(text);
 
-							translated = translated.replaceAll("\u000A", "␤").replaceAll("\u000D", "␍");
+							if (!chkUsePUA.checked)
+								translated = translated.replaceAll("\t", "⭾").replaceAll("\n", "␤").replaceAll("\r", "␍");
 
 							lblDefaultFont.innerText = text;
 							lblUntranslated.innerText = text;
@@ -104,6 +120,7 @@
 	</head>
 	<body>
 		<select id="lstSuggestions">
+			<option>Pick me!</option>
 			<option>├──────────────────────────────── Immediate ─────────────────────────────────┬┤</option>
 			<option>┌──────────────────────────────── Untitled ─────────────────────────────────↑─┐</option>
 			<option>☺☻♥♦♣♠●◘○◙♂♀♪♬✵⯈⯇↕‼¶§▬↨↑↓	→←∟↔⯅⯆</option>
@@ -114,6 +131,8 @@
 		<br />
 		Input: <input id="txtInput" type="text" value="Type text here or select from the drop-down above" size="100" /><br />
 		<input id="cmdTranslate" type="button" value="Translate" /><br />
+		<input id="chkUsePUA" type="checkbox">
+		<label for="chkUsePUA">Use private use area (enables rendering control characters)"</label><br />
 		<hr />
 		<table style="border: none">
 			<tr>

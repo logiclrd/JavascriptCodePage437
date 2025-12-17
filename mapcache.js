@@ -10,6 +10,24 @@ function MapCache(convert)
 
 	mapCache.TemporaryCacheLimit = 20;
 
+	mapCache.InvalidateKey =
+		function(str)
+		{
+			if (str in _cache) delete _cache[str];
+
+			if (str in _preCache)
+			{
+				delete _preCache[str];
+				_preCacheSize--;
+			}
+
+			if (str in _recent)
+			{
+				delete _recent[str];
+				_recentSize--;
+			}
+		};
+
 	mapCache.Map =
 	  function(str)
 		{
@@ -51,7 +69,7 @@ function MapCache(convert)
 				return mapped;
 			}
 
-      // No? Perform the mapping.
+			// No? Perform the mapping.
 			mapped = convert(str);
 
 			// Clear recent memory if it grows too large.
