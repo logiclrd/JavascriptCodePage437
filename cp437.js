@@ -214,7 +214,7 @@ function ConvertUnicodeToCP437(str)
 			case 0x00BB: result += '\u00AF'; break; // »
 			case 0x2591: result += '\u00B0'; break; // ░
 			case 0x2592: result += '\u00B1'; break; // ▒
-			case 0x2593: result += '\u00B2'; break; // ▓[e]
+			case 0x2593: result += '\u00B2'; break; // ▓
 			case 0x2502: result += '\u00B3'; break; // │
 			case 0x2524: result += '\u00B4'; break; // ┤
 			case 0x2561: result += '\u00B5'; break; // ╡

@@ -3,30 +3,42 @@
 		<script src="cp437.js"></script>
 		<script src="mapcache.js"></script>
 		<style type="text/css">
-      @font-face
-      {
-        font-family: 'Perfect DOS VGA 437';
-        src: local('Perfect DOS VGA 437'), local('PerfectDOSVGA437'),
-          url('PerfectDOSVGA437.woff2') format('woff2'),
-          url('PerfectDOSVGA437.woff') format('woff');
-        font-weight: normal;
-        font-style: normal;
-        font-display: swap;
-      }
+			@font-face
+			{
+				font-family: 'Perfect DOS VGA 437';
+				src: local('Perfect DOS VGA 437'), local('PerfectDOSVGA437'),
+					url('PerfectDOSVGA437.woff2') format('woff2'),
+					url('PerfectDOSVGA437.woff') format('woff');
+				font-weight: normal;
+				font-style: normal;
+				font-display: swap;
+			}
+
+			@font-face
+			{
+				font-family: 'Perfect DOS VGA 437 Complete';
+				src: local('Perfect DOS VGA 437 Complete'), local('PerfectDOSVGA437Complete'),
+					url('PerfectDOSVGA437Complete.woff2') format('woff2'),
+					url('PerfectDOSVGA437Complete.woff') format('woff');
+				font-weight: normal;
+				font-style: normal;
+				font-display: swap;
+			}
 
 			.DOSFont
 			{
 				background: #DDD;
 				border: 1px solid #004;
 				padding: 2px;
-				font-family: 'Perfect DOS VGA 437';
-        letter-spacing: calc(-1em / 16); /* convert 9x16 to 8x16 */
+				font-family: 'Perfect DOS VGA 437 Complete';
+				letter-spacing: calc(-1em / 16); /* convert 9x16 to 8x16 */
 			}
 		</style>
 		<script type="text/javascript">
 			window.onload =
 				function()
 				{
+					var lstSuggestions = document.getElementById("lstSuggestions");
 					var txtInput = document.getElementById("txtInput");
 					var cmdTranslate = document.getElementById("cmdTranslate");
 					var lblDefaultFont = document.getElementById("lblDefaultFont");
@@ -37,6 +49,12 @@
 					var lblCacheRecent = document.getElementById("lblCacheRecent");
 					var lblCachePreCache = document.getElementById("lblCachePreCache");
 					var lblCacheCached = document.getElementById("lblCacheCached");
+
+					lstSuggestions.onchange =
+						function()
+						{
+							txtInput.value = lstSuggestions.options[lstSuggestions.selectedIndex].value;
+						};
 
 					var didConvert;
 
@@ -57,6 +75,8 @@
 							didConvert = false;
 
 							var translated = mapCache.Map(text);
+
+							translated = translated.replaceAll("\u000A", "␤").replaceAll("\u000D", "␍");
 
 							lblDefaultFont.innerText = text;
 							lblUntranslated.innerText = text;
@@ -83,7 +103,16 @@
 		</script>
 	</head>
 	<body>
-		Input: <input id="txtInput" type="text" value="├──────────────────────────────── Immediate ─────────────────────────────────┬┤" size="100" /><br />
+		<select id="lstSuggestions">
+			<option>├──────────────────────────────── Immediate ─────────────────────────────────┬┤</option>
+			<option>┌──────────────────────────────── Untitled ─────────────────────────────────↑─┐</option>
+			<option>☺☻♥♦♣♠●◘○◙♂♀♪♬✵⯈⯇↕‼¶§▬↨↑↓	→←∟↔⯅⯆</option>
+			<option>ÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜ¢£¥₧ƒáíóúñÑ</option>
+			<option>░▒▓│┤╡╢╖╕╣║╗╝╜╛┐└┴┬├─┼╞╟╚╔╩╦╠═╬╧╨╤╥╙╘╒╓╫╪┘┌█▄▌▐▀</option>
+			<option>αßΓπΣσµτΦΘΩδ∞φε∩≡±≥≤⌠⌡÷≈°∙·√ⁿ²■</option>
+		</select>
+		<br />
+		Input: <input id="txtInput" type="text" value="Type text here or select from the drop-down above" size="100" /><br />
 		<input id="cmdTranslate" type="button" value="Translate" /><br />
 		<hr />
 		<table style="border: none">
